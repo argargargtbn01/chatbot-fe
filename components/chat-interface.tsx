@@ -38,7 +38,7 @@ export default function ChatInterface() {
 
   const fetchChatSessions = async () => {
     try {
-      const response = await fetch('http://localhost:5000/chat-session')
+      const response = await fetch('https://quang1709.ddns.net/chat-session')
       const data = await response.json()
       setChatSessions(data)
     } catch (error) {
@@ -48,7 +48,7 @@ export default function ChatInterface() {
 
   const fetchMessages = async (chatId: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/message?chat_id=${chatId}`)
+      const response = await fetch(`https://quang1709.ddns.net/message?chat_id=${chatId}`)
       const data = await response.json()
       setMessages(data.reverse())  // Đảm bảo tin nhắn hiển thị từ cũ đến mới
     } catch (error) {
@@ -59,7 +59,7 @@ export default function ChatInterface() {
   const handleSend = async () => {
     if (input.trim()) {
       try {
-        const response = await fetch('http://localhost:5000/chat', {
+        const response = await fetch('https://quang1709.ddns.net/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
