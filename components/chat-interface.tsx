@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -38,7 +39,9 @@ export default function ChatInterface() {
   }, [messages])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }
 
   const fetchChatSessions = async () => {
@@ -55,15 +58,36 @@ export default function ChatInterface() {
     try {
       const response = await fetch(`https://quang1709.ddns.net/message?chat_id=${chatId}`)
       const data = await response.json()
-      setMessages(data.reverse())  // Ensure messages are displayed from oldest to newest
+      setMessages(data.reverse().map((msg: Message) => ({
+        ...msg,
+        content: cleanResponse(msg.content)
+      })))
     } catch (error) {
       console.error('Error fetching messages:', error)
     }
   }
 
-  const cleanResponse = (response: string) => {
-    return response.replace(/\\n/g, '\n').replace(/\\/g, '')
-  }
+  const cleanResponse = (response: string): string => {
+    return response
+      .replace(/\\n/g, '\n') // Thay thế ký tự xuống dòng
+      .replace(/\/g, '') // Xóa ký tự không mong muốn (thường là ký tự không hiển thị)
+      .replace(/\\\(/g, '$') // Latex cho biểu thức inline
+      .replace(/\\\)/g, '$')
+      .replace(/\\\[/g, '$$') // Latex cho biểu thức block
+      .replace(/\\\]/g, '$$')
+      .replace(/\\{/g, '{')
+      .replace(/\\}/g, '}')
+      .replace(/\\_/g, '_')
+      .replace(/\\frac{([^}]*)}{([^}]*)}/g, '\\frac{$1}{$2}') // Xử lý \frac
+      .replace(/\\cdot/g, '\\cdot ') // Latex cho dấu nhân
+      .replace(/\\boxed{([^}]*)}/g, '$$\\boxed{$1}$$') // Latex cho box
+      .replace(/\[([^\]]*)\]/g, '$$[$1]$$') // Xử lý Latex dạng block
+      .replace(/\( /g, '(') // Loại bỏ khoảng trắng thừa bên trong dấu ngoặc
+      .replace(/ \)/g, ')')
+      .replace(/\s+/g, ' ') // Xóa khoảng trắng thừa
+      .trim(); // Loại bỏ khoảng trắng thừa ở đầu/cuối
+  };
+  
 
   const handleSend = async () => {
     if (input.trim()) {
@@ -111,8 +135,6 @@ export default function ChatInterface() {
                     return newMessages
                   })
                   scrollToBottom()
-                } else {
-                  // Handle completion if needed
                 }
               } catch (error) {
                 console.error('Error parsing JSON:', error)
@@ -185,6 +207,7 @@ export default function ChatInterface() {
                   <ReactMarkdown 
                     remarkPlugins={[remarkMath]}
                     rehypePlugins={[rehypeKatex]}
+                    className="break-words"
                   >
                     {message.content}
                   </ReactMarkdown>
