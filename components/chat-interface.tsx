@@ -85,7 +85,6 @@ export default function ChatInterface() {
       .replace(/\( /g, '(') // Loại bỏ khoảng trắng thừa bên trong dấu ngoặc
       .replace(/ \)/g, ')')
       .replace(/\s+/g, ' ') // Xóa khoảng trắng thừa
-      .trim(); // Loại bỏ khoảng trắng thừa ở đầu/cuối
   };
   
 
