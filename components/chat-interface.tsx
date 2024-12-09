@@ -84,6 +84,7 @@ export default function ChatInterface() {
       .replace(/\[([^\]]*)\]/g, '$$[$1]$$') // Xử lý Latex dạng block
       .replace(/\( /g, '(') // Loại bỏ khoảng trắng thừa bên trong dấu ngoặc
       .replace(/ \)/g, ')')
+      .replace(/(\d\.)/g, '\n$1')
   };
   
 
